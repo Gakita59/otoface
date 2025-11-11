@@ -36,9 +36,9 @@ namespace otoface
                     {
                         foreach (var bone in group.Bones)
                         {
-                            var line1 = $"{ke.Frame},{bone.BoneName},{(ke.EventType == "Down" ? "0" : bone.Value.ToString())}";
+                            var line1 = $"{ke.Frame},{bone.BoneName},{(ke.EventType == "ON" ? "0" : bone.Value.ToString())}";
                             csvLines.Add(line1);
-                            var line2 = $"{ke.Frame + int.Parse(group.FadeFrame)},{bone.BoneName},{(ke.EventType == "Down" ? bone.Value.ToString() : "0")}";
+                            var line2 = $"{ke.Frame + int.Parse(group.FadeFrame)},{bone.BoneName},{(ke.EventType == "ON" ? bone.Value.ToString() : "0")}";
                             csvLines.Add(line2);
                         }
                     }

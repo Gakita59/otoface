@@ -83,7 +83,7 @@ namespace otoface
             var k = e.Key;
             if (timer.IsRunning && k >= Key.A && k <= Key.Z && prevKey != k)
             {
-                processEvent(k, "Down");
+                processEvent(k, "ON");
             }
             prevKey = k;
         }
@@ -93,7 +93,7 @@ namespace otoface
             var k = e.Key;
             if (timer.IsRunning)
             {
-                processEvent(k, "Up");
+                processEvent(k, "OFF");
             }
             prevKey = Key.None;
         }
@@ -176,8 +176,7 @@ namespace otoface
                 {
                     GroupName = inputDialog.Expression,
                     Key = inputDialog.Key,
-                    FadeFrame = inputDialog.FadeFrame
-                };
+                    FadeFrame = inputDialog.FadeFrame                };
                 // ここで newItem を DataGrid の ItemsSource に追加
                 (groupKey.ItemsSource as ObservableCollection<Group>)?.Add(newItem);
             }
@@ -271,6 +270,24 @@ namespace otoface
                 savejson();
                 CsvGenerator CsvGen = new CsvGenerator();
                 CsvGen.GenerateCsvFromEventsAndJson("faceGroup.json", keyInputs);
+            }
+        }
+
+        private void keyInputsList_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            int index = keyInputsList.SelectedIndex;
+            KeyEvent targetKeyInput = keyInputs[index];
+            string faceGroup = targetKeyInput.Key;
+            int frame = targetKeyInput.Frame;
+            string eventType = targetKeyInput.EventType;
+
+            KeyEventEditDialog keyEventEditDialog = new KeyEventEditDialog(faceGroup, frame, eventType);
+            if (keyEventEditDialog.ShowDialog() == true)
+            {
+                KeyEvent newKeyEvent = new KeyEvent(int.Parse(keyEventEditDialog.Frame), keyEventEditDialog.FaceGroup, keyEventEditDialog.EventType); // フレームがintであることはkeyEventEditDialogクラス内で保証済み
+                keyInputs[index] = newKeyEvent;
+                var newText = $"{keyEventEditDialog.FaceGroup}, {keyEventEditDialog.Frame}, {keyEventEditDialog.EventType}";
+                keyInputsList.Items[index] = newText;
             }
         }
     }

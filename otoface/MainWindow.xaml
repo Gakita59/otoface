@@ -19,7 +19,7 @@
             <Button x:Name="csvOutputButton" Content="csv出力" HorizontalAlignment="Left" Canvas.Left="140" Canvas.Top="10" VerticalAlignment="Top" Width="60" Click="outputButton_Click" Height="20"/>
             <Button x:Name="selectFileButton" Content="動画選択" HorizontalAlignment="Left" Canvas.Left="205" Canvas.Top="10" VerticalAlignment="Top" Width="60" Click="SelectMovieFile_Click" Height="20"/>
             <Label Name="pathLabel" FontSize="10" Content="" HorizontalAlignment="Left" Canvas.Left="10" Canvas.Top="35" VerticalAlignment="Top" Width="280"/>
-            <ListBox x:Name="keyInputsList" HorizontalAlignment="Left" Height="580" Canvas.Left="10" Canvas.Top="60" VerticalAlignment="Top" Width="280"/>
+            <ListBox x:Name="keyInputsList" HorizontalAlignment="Left" Height="580" Canvas.Left="10" Canvas.Top="60" VerticalAlignment="Top" Width="280" MouseDoubleClick="keyInputsList_MouseDoubleClick"/>
         </Canvas>
         
         <MediaElement Name="mediaPlayer" LoadedBehavior="Manual" UnloadedBehavior="Stop" Margin="300,10,0,0" HorizontalAlignment="Left" Height="300" VerticalAlignment="Top" Width="533"/>

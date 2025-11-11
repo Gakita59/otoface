@@ -10,7 +10,7 @@ namespace otoface
     {
         public int Frame { get; set; }
         public string Key { get; set; }
-        public string EventType { get; set; } // "down" or "up"
+        public string EventType { get; set; } // "ON" or "OFF"
 
         public KeyEvent(int frame, string key, string eventType)
         {

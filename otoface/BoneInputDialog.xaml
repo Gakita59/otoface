@@ -1,7 +1,7 @@
 ﻿<Window x:Class="otoface.BoneInputDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="OtoFace" Height="178" Width="159">
+        Title="OtoFace" Height="200" Width="159">
     <StackPanel Margin="10">
         <TextBlock Text="ボーン名:" Width="111"/>
         <TextBox x:Name="txtBoneName" Width="112"/>
