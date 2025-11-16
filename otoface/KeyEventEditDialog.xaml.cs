@@ -20,13 +20,15 @@ namespace otoface
     /// </summary>
     public partial class KeyEventEditDialog : Window
     {
-        public string FaceGroup => txtFaceGroup.Text;
+        public string FaceGroup => comboFaceGroup.Text;
         public string Frame => txtFrame.Text;
         public string EventType => radioOn.IsChecked == true ? "ON" : "OFF";
-        public KeyEventEditDialog(string faceGroup, int frame, string eventType)
+        public GroupBox gb;
+        public KeyEventEditDialog(string faceGroup, int frame, string eventType, List<string> groupName)
         {
             InitializeComponent();
-            txtFaceGroup.Text = faceGroup;
+            comboFaceGroup.ItemsSource = groupName;
+            comboFaceGroup.Text = faceGroup;
             txtFrame.Text = frame.ToString();
             if (eventType == "ON")
             {
@@ -39,11 +41,17 @@ namespace otoface
         }
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
-            if (int.TryParse(Frame, out int num))
+            if (!comboFaceGroup.Items.Contains(FaceGroup))
             {
-                // 数値がintになっている → ダイアログを閉じる
-                this.DialogResult = true;
-            } else
+                // 入力した表情グループがコンボボックスにない → メッセージを表示して再入力を促す
+                MessageBox.Show(
+                    "表情グループを正しく入力してください。",
+                    "入力エラー",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning
+                );
+            }
+            else if (!int.TryParse(Frame, out int num))
             {   // 数値がintになっていない → メッセージを表示して再入力を促す
                 MessageBox.Show(
                     "フレームには数値を入力してください。",
@@ -51,7 +59,13 @@ namespace otoface
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning
                 );
+            } else
+            {
+                // チェックがOKならダイアログを閉じる
+                this.DialogResult = true;
+
             }
+
         }
     }
 }

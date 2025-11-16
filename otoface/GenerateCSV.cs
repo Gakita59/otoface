@@ -5,12 +5,13 @@ using System.Linq;
 using System.Text;
 using Microsoft.Win32;
 using System.Windows;
+using System.Collections.ObjectModel;
 
 namespace otoface
 {
     public class CsvGenerator()
     {
-        public void GenerateCsvFromEventsAndJson(string jsonFilePath, List<KeyEvent> keyEvents)
+        public void GenerateCsvFromEventsAndJson(string jsonFilePath, ObservableCollection<KeyEvent> keyEvents)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog
             {

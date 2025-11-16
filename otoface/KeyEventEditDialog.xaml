@@ -4,7 +4,7 @@
         Title="OtoFace" Height="180" Width="165">
     <StackPanel Margin="10">
         <TextBlock Text="表情グループ:" Width="111"/>
-        <TextBox x:Name="txtFaceGroup" Width="112"/>
+        <ComboBox x:Name="comboFaceGroup" Width="112"/>
         <TextBlock Text="フレーム:" Width="111"/>
         <TextBox x:Name="txtFrame" Margin="0,0,0,0" Width="112"/>
         <StackPanel Orientation="Horizontal" Margin="10,5">
