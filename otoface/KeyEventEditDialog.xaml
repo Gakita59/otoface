@@ -1,0 +1,16 @@
+﻿<Window x:Class="otoface.KeyEventEditDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="OtoFace" Height="180" Width="165">
+    <StackPanel Margin="10">
+        <TextBlock Text="表情グループ:" Width="111"/>
+        <ComboBox x:Name="comboFaceGroup" Width="112"/>
+        <TextBlock Text="フレーム:" Width="111"/>
+        <TextBox x:Name="txtFrame" Margin="0,0,0,0" Width="112"/>
+        <StackPanel Orientation="Horizontal" Margin="10,5">
+            <RadioButton x:Name="radioOn" Content="ON" GroupName="ColorGroup" Margin="10,0"/>
+            <RadioButton x:Name="radioOff" Content="OFF" GroupName="ColorGroup" Margin="10,0"/>
+        </StackPanel>
+        <Button Content="OK" Click="OkButton_Click" Width="111"/>
+    </StackPanel>
+</Window>

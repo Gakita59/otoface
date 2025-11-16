@@ -5,12 +5,13 @@ using System.Linq;
 using System.Text;
 using Microsoft.Win32;
 using System.Windows;
+using System.Collections.ObjectModel;
 
 namespace otoface
 {
     public class CsvGenerator()
     {
-        public void GenerateCsvFromEventsAndJson(string jsonFilePath, List<KeyEvent> keyEvents)
+        public void GenerateCsvFromEventsAndJson(string jsonFilePath, ObservableCollection<KeyEvent> keyEvents)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog
             {
@@ -36,9 +37,9 @@ namespace otoface
                     {
                         foreach (var bone in group.Bones)
                         {
-                            var line1 = $"{ke.Frame},{bone.BoneName},{(ke.EventType == "Down" ? "0" : bone.Value.ToString())}";
+                            var line1 = $"{ke.Frame},{bone.BoneName},{(ke.EventType == "ON" ? "0" : bone.Value.ToString())}";
                             csvLines.Add(line1);
-                            var line2 = $"{ke.Frame + int.Parse(group.FadeFrame)},{bone.BoneName},{(ke.EventType == "Down" ? bone.Value.ToString() : "0")}";
+                            var line2 = $"{ke.Frame + int.Parse(group.FadeFrame)},{bone.BoneName},{(ke.EventType == "ON" ? bone.Value.ToString() : "0")}";
                             csvLines.Add(line2);
                         }
                     }

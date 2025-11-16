@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using Newtonsoft.Json;
 using System.Windows;
@@ -8,7 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Collections.ObjectModel;
 using Microsoft.Win32;
-using System.Windows.Media;
+using System.Xml.Linq;
 
 namespace otoface
 {
@@ -16,7 +14,7 @@ namespace otoface
     {   
         private Stopwatch timer;
         private Key prevKey;
-        private List<KeyEvent> keyInputs = new List<KeyEvent>();
+        private ObservableCollection<KeyEvent> keyInputs = new ObservableCollection<KeyEvent>();
         // private MediaPlayer mediaPlayer = new MediaPlayer();
         private string selectedFilePath;
 
@@ -24,18 +22,30 @@ namespace otoface
         {
             InitializeComponent();
 
+            stopButton.IsEnabled = false;
             var manager = new JsonDataManager();
             var groups = manager.LoadGroups("faceGroup.json");
             groupKey.ItemsSource = groups;
+            keyInputsList.ItemsSource = keyInputs;
 
             timer = new Stopwatch();
         }
 
         private void startButton_Click(object sender, RoutedEventArgs e)
         {
+            if (keyInputs.Count != 0)
+            {
+                MessageBoxResult result = MessageBox.Show("新たな記録を開始すると現在のデータは失われます。\n新たに記録を開始してよろしいですか？", "OtoFace", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.No)
+                {
+                    return;
+                }
+
+            }
+            startButton.IsEnabled = false;
+            stopButton.IsEnabled = true;
             mediaPlayer.Play();
             timer.Restart();
-            keyInputsList.Items.Clear();
             keyInputs.Clear();
             this.KeyDown += MainWindow_KeyDown; // キー入力イベントを登録
             this.KeyUp += MainWindow_KeyUp;
@@ -72,10 +82,7 @@ namespace otoface
 
             var ke = new KeyEvent(frameElapsed, group, eventType);
             keyInputs.Add(ke);
-            var inputText = $"{group}, {frameElapsed}, {eventType}";
-            keyInputsList.Items.Add(inputText);
-            keyInputsList.ScrollIntoView(inputText);
-
+            keyInputsList.ScrollIntoView(ke.DisplayText);
         }
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
@@ -83,7 +90,7 @@ namespace otoface
             var k = e.Key;
             if (timer.IsRunning && k >= Key.A && k <= Key.Z && prevKey != k)
             {
-                processEvent(k, "Down");
+                processEvent(k, "ON");
             }
             prevKey = k;
         }
@@ -93,13 +100,15 @@ namespace otoface
             var k = e.Key;
             if (timer.IsRunning)
             {
-                processEvent(k, "Up");
+                processEvent(k, "OFF");
             }
             prevKey = Key.None;
         }
 
         private void stopButton_Click(object sender, RoutedEventArgs e)
         {
+            startButton.IsEnabled = true;
+            stopButton.IsEnabled = false;
             timer.Stop();
             mediaPlayer.Stop();
             this.KeyDown -= MainWindow_KeyDown; // キー入力イベントを解除
@@ -176,8 +185,7 @@ namespace otoface
                 {
                     GroupName = inputDialog.Expression,
                     Key = inputDialog.Key,
-                    FadeFrame = inputDialog.FadeFrame
-                };
+                    FadeFrame = inputDialog.FadeFrame                };
                 // ここで newItem を DataGrid の ItemsSource に追加
                 (groupKey.ItemsSource as ObservableCollection<Group>)?.Add(newItem);
             }
@@ -273,5 +281,74 @@ namespace otoface
                 CsvGen.GenerateCsvFromEventsAndJson("faceGroup.json", keyInputs);
             }
         }
+
+        private void keyInputsList_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            if(menuDelete != null)
+            {
+                menuDelete.IsEnabled = keyInputsList.SelectedItem != null;
+            }
+            if(menuEdit != null)
+            {
+                menuEdit.IsEnabled = keyInputsList.SelectedItem != null;
+            }
+
+        }
+
+
+        private void keyInputsList_MouseDoubleClick(object sender, EventArgs e)
+        {
+            int index = keyInputsList.SelectedIndex;
+            if(index == -1)
+            {
+                return;
+            }
+            KeyEvent targetKeyInput = keyInputs[index];
+            string faceGroup = targetKeyInput.Key;
+            int frame = targetKeyInput.Frame;
+            string eventType = targetKeyInput.EventType;
+            ObservableCollection<Group> source = groupKey.ItemsSource as ObservableCollection<Group>;
+
+            List<string> groupNameList = source?
+                .Select(x => x.GroupName)
+                .ToList()
+                ?? new List<string>();
+
+            KeyEventEditDialog keyEventEditDialog = new KeyEventEditDialog(faceGroup, frame, eventType, groupNameList);
+            if (keyEventEditDialog.ShowDialog() == true)
+            {
+                KeyEvent newKeyEvent = new KeyEvent(int.Parse(keyEventEditDialog.Frame), keyEventEditDialog.FaceGroup, keyEventEditDialog.EventType); // フレームがintであることはkeyEventEditDialogクラス内で保証済み
+                keyInputs[index] = newKeyEvent;
+            }
+        }
+
+        private void AddMenu_Click(object sender, EventArgs e)
+        {
+            ObservableCollection<Group> source = groupKey.ItemsSource as ObservableCollection<Group>;
+
+            List<string> groupNameList = source?
+                .Select(x => x.GroupName)
+                .ToList()
+                ?? new List<string>();
+
+            KeyEventEditDialog keyEventEditDialog = new KeyEventEditDialog("", 0, "", groupNameList); 
+            if (keyEventEditDialog.ShowDialog() == true)
+            {
+                KeyEvent newKeyEvent = new KeyEvent(int.Parse(keyEventEditDialog.Frame), keyEventEditDialog.FaceGroup, keyEventEditDialog.EventType); // フレームがintであることはkeyEventEditDialogクラス内で保証済み
+                int insertIndex = keyInputs.TakeWhile(x => x.Frame <= newKeyEvent.Frame).Count();
+                keyInputs.Insert(insertIndex, newKeyEvent);
+            }
+        }
+
+        private void DeleteMenu_Click(Object sender, EventArgs e)
+        {
+            int index = keyInputsList.SelectedIndex;
+            MessageBoxResult result = MessageBox.Show("選択されたフレームを削除します。よろしいですか？", "OtoFace", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                keyInputs.RemoveAt(index);
+            }
+
+        } 
     }
 }
