@@ -44,6 +44,8 @@ namespace otoface
             }
             startButton.IsEnabled = false;
             stopButton.IsEnabled = true;
+            speedSlider.IsEnabled = false;
+            mediaPlayer.SpeedRatio = speedSlider.Value;
             mediaPlayer.Play();
             timer.Restart();
             keyInputs.Clear();
@@ -54,7 +56,7 @@ namespace otoface
         private void processEvent(Key k, string eventType)
         {
             var timeElapsedMilliseconds = timer.ElapsedMilliseconds;
-            var frameElapsed = (int)(((float)timeElapsedMilliseconds / 1000) * 30);
+            var frameElapsed = (int)(((float)timeElapsedMilliseconds / 1000) * 30 * speedSlider.Value);
             var group = "";
 
             char keyChar = (char)('A' + (k - Key.A));
@@ -109,6 +111,7 @@ namespace otoface
         {
             startButton.IsEnabled = true;
             stopButton.IsEnabled = false;
+            speedSlider.IsEnabled = true;
             timer.Stop();
             mediaPlayer.Stop();
             this.KeyDown -= MainWindow_KeyDown; // キー入力イベントを解除
@@ -208,6 +211,27 @@ namespace otoface
             }
         }
 
+        private void volumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if(mediaPlayer == null)
+            {
+                return;
+            }
+            double volume = volumeSlider.Value;
+            mediaPlayer.Volume = volume;
+            volumeLabel.Text = $"{volume:F1}";
+        }
+
+        private void speedSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (mediaPlayer == null)
+            {
+                return;
+            }
+            double speed = speedSlider.Value;
+            speedLabel.Text = $"{speed:F1}";
+        }
+
         private void DeleteGroupButton_Click(object sender, RoutedEventArgs e)
         {
             var selectedGroup = groupKey.SelectedItem as Group;
@@ -261,7 +285,7 @@ namespace otoface
         private void SelectMovieFile_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Video Files (*.mp4;*.avi)|*.mp4;*.avi"; // 音声ファイルのフィルタ
+            openFileDialog.Filter = "Video Files (*.mp4;*.mov;*.mp3;*.wav)|*.mp4;*.mov;*.mp3;*.wav"; // 動画ファイルのフィルタ
             if (openFileDialog.ShowDialog() == true)
             {
 
@@ -349,6 +373,22 @@ namespace otoface
                 keyInputs.RemoveAt(index);
             }
 
-        } 
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            var result = MessageBox.Show(
+                "終了してよろしいですか？",
+                "OtoFace",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.No)
+            {
+                e.Cancel = true;   // ウィンドウを閉じるのをキャンセル
+            }
+        }
+
+
     }
 }

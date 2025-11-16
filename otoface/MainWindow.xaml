@@ -4,7 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="OtoFace" Height="700" Width="850">
+        Title="OtoFace"
+        ResizeMode="CanMinimize"
+        Height="700" MaxHeight="700" MinHeight="700"
+        Width="860" MaxWidth="860" MinWidth="860"
+        Closing="Window_Closing">
     <Grid Margin="5,5,10,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="309*"/>
@@ -14,28 +18,36 @@
 
 
         <Canvas Width="300" Height="650" Margin="0,0,0,0" HorizontalAlignment="Left">
-            <Button x:Name="startButton" Content="スタート" HorizontalAlignment="Left" Canvas.Left="10" Canvas.Top="10" VerticalAlignment="Top" Width="60" Click="startButton_Click" Height="20"/>
-            <Button x:Name="stopButton" Content="停止" HorizontalAlignment="Left" Canvas.Left="75" Canvas.Top="10" VerticalAlignment="Top" Width="60" Click="stopButton_Click" Height="20"/>
-            <Button x:Name="csvOutputButton" Content="csv出力" HorizontalAlignment="Left" Canvas.Left="140" Canvas.Top="10" VerticalAlignment="Top" Width="60" Click="outputButton_Click" Height="20"/>
-            <Button x:Name="selectFileButton" Content="動画選択" HorizontalAlignment="Left" Canvas.Left="205" Canvas.Top="10" VerticalAlignment="Top" Width="60" Click="SelectMovieFile_Click" Height="20"/>
-            <Label Name="pathLabel" FontSize="10" Content="" HorizontalAlignment="Left" Canvas.Left="10" Canvas.Top="35" VerticalAlignment="Top" Width="280"/>
+            <Button x:Name="startButton" Content="スタート" HorizontalAlignment="Left" Canvas.Left="10" Canvas.Top="10" VerticalAlignment="Center" Width="65" Click="startButton_Click" Height="20"/>
+            <Button x:Name="stopButton" Content="停止" HorizontalAlignment="Left" Canvas.Left="80" Canvas.Top="10" VerticalAlignment="Center" Width="65" Click="stopButton_Click" Height="20"/>
+            <Button x:Name="csvOutputButton" Content="csv出力" HorizontalAlignment="Center" Canvas.Left="150" Canvas.Top="10" VerticalAlignment="Center" Width="65" Click="outputButton_Click" Height="20"/>
+            <Button x:Name="selectFileButton" Content="メディア選択" HorizontalAlignment="Left" Canvas.Left="220" Canvas.Top="10" VerticalAlignment="Center" Width="69" Click="SelectMovieFile_Click" Height="20"/>
+            <Label Name="pathLabel" FontSize="10" Content="" HorizontalAlignment="Left" Canvas.Left="10" Canvas.Top="35" VerticalAlignment="Center" Width="264"/>
             <ListBox x:Name="keyInputsList" DisplayMemberPath="DisplayText" HorizontalAlignment="Left" Height="580" Canvas.Left="10" Canvas.Top="60" VerticalAlignment="Top" Width="280" MouseDoubleClick="keyInputsList_MouseDoubleClick" ContextMenuOpening="keyInputsList_ContextMenuOpening">
                 <ListBox.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="追加" Click="AddMenu_Click"/>
-                        <MenuItem Header="削除" x:Name="menuDelete" Click="DeleteMenu_Click"/>
                         <MenuItem Header="編集" x:Name="menuEdit" Click="keyInputsList_MouseDoubleClick     "/>
+                        <MenuItem Header="削除" x:Name="menuDelete" Click="DeleteMenu_Click"/>
                     </ContextMenu>
                 </ListBox.ContextMenu>
             </ListBox>
         </Canvas>
-        
-        <MediaElement Name="mediaPlayer" LoadedBehavior="Manual" UnloadedBehavior="Stop" Margin="300,10,0,0" HorizontalAlignment="Left" Height="300" VerticalAlignment="Top" Width="533"/>
-        
+
+        <Canvas Width="533" Height="325" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="300,0,0,0">
+            <Label Content="Volume:" HorizontalAlignment="Center" VerticalAlignment="Center" Width="53"/>
+            <Slider x:Name="volumeSlider" Minimum="0.0" Maximum="1.0" Value="1.0" Width="130" Canvas.Left="52" Canvas.Top="5" HorizontalAlignment="Left" VerticalAlignment="Center" ValueChanged="volumeSlider_ValueChanged"/>
+            <TextBlock x:Name="volumeLabel" Text="1.0" Canvas.Left="187" Canvas.Top="6" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <Label Content="Speed:" Width="52" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.Left="255" Canvas.Top="1"/>
+            <Slider x:Name="speedSlider" Minimum="0.5" Maximum="1.0" Value="1.0" Width="130" Canvas.Left="300" Canvas.Top="5" HorizontalAlignment="Left" VerticalAlignment="Center" ValueChanged="speedSlider_ValueChanged"/>
+            <MediaElement Name="mediaPlayer" LoadedBehavior="Manual" UnloadedBehavior="Stop" Margin="0,25"  HorizontalAlignment="Left" Height="300" VerticalAlignment="Top" Width="533"/>
+            <TextBlock x:Name="speedLabel" Text="1.0" Canvas.Left="435" Canvas.Top="6" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        </Canvas>
+
         <Canvas Width="230" Height="330" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="300,320,0,0">
             <Button Content="＋" HorizontalAlignment="Left" Canvas.Left="10" Canvas.Top="10" VerticalAlignment="Top" Width="20" Height="20" Click="AddBoneButton_Click" />
             <Button Content="ー" HorizontalAlignment="Left" Canvas.Left="35" Canvas.Top="10" VerticalAlignment="Top" Width="20" Height="20" Click="DeleteBoneButton_Click" />
-            <Label Content="セルをダブルクリックで編集可" FontSize="10" HorizontalAlignment="Left" Canvas.Left="55" Canvas.Top="10" Width="130" Height="20" VerticalAlignment="Top" />
+            <Label Content="セルをダブルクリックで編集可" FontSize="10" HorizontalAlignment="Center" Canvas.Left="55" Canvas.Top="10" Width="130" Height="25" VerticalAlignment="Center" />
             <DataGrid x:Name="boneGroup" FontSize="15" HorizontalAlignment="Left" Height="285" Canvas.Left="10" Canvas.Top="35" VerticalAlignment="Top" Width="210" CanUserAddRows="False" AutoGenerateColumns="False">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ボーン名" Binding="{Binding BoneName}"/>
