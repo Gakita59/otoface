@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 
 namespace otoface
 {
-    public struct KeyEvent
+    public class KeyEvent
     {
         public int Frame { get; set; }
         public string Key { get; set; }
-        public string EventType { get; set; } // "down" or "up"
+        public string EventType { get; set; } // "ON" or "OFF"
+
+        public string DisplayText => $"{Key}, {Frame}, {EventType}";
 
         public KeyEvent(int frame, string key, string eventType)
         {
